@@ -89,7 +89,7 @@ pipeline:
                         action:
                             type: StageRollback
         - stage:
-              name: Deploy web
+              name: Deploy MongoDb
               identifier: Deploy_MongoDB
               description: ""
               type: Deployment
