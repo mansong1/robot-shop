@@ -32,7 +32,7 @@ pipeline:
                                                     connectorRef: org.Github
                                                     gitFetchType: Branch
                                                     paths:
-                                                        - manifests/><+service.name>/templates
+                                                        - manifests/<+service.name>/templates
                                                     repoName: robot-shop
                                                     branch: master
                                             skipResourceVersioning: false
