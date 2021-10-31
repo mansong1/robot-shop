@@ -466,7 +466,7 @@ pipeline:
                             steps:
                                 - step:
                                       type: Barrier
-                                      name: Database Complete
+                                      name: DBs Complete
                                       identifier: Database_Complete
                                       spec:
                                           barrierRef: Wait_for_DBs
