@@ -1,0 +1,15 @@
+name: <+service.name>
+replicas: 1
+
+image: <+artifact.image>
+dockercfg: ${artifact.source.dockerconfig}
+
+createNamespace: true
+namespace: <+infra.namespace>
+
+serviceType: ClusterIP
+
+# A Service can map an incoming port to any targetPort.
+# targetPort is where application is listening on inside the container.
+servicePort: 3306
+serviceTargetPort: 3306
