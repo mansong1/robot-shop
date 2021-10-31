@@ -75,7 +75,7 @@ pipeline:
                                           skipDryRun: false
                                 - step:
                                       type: Barrier
-                                      name: DBs Complete
+                                      name: DBs Completed
                                       identifier: Databases_Complete
                                       spec:
                                           barrierRef: Databases
