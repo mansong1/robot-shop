@@ -212,8 +212,8 @@ pipeline:
                                             type: DockerRegistry
                                             spec:
                                                 connectorRef: org.Dockerhub
-                                                imagePath: redis
-                                                tag: 6.2-alpine
+                                                imagePath: library/redis
+                                                tag: 6.2-alpine3.14
                         infrastructure:
                             environmentRef: staging
                             infrastructureDefinition:
