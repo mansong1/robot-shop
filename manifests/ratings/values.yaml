@@ -1,8 +1,7 @@
-name: ratings
+name: <+service.name>
 replicas: 1
 
 image: <+artifact.image>
-
 
 createNamespace: true
 namespace: <+infra.namespace>
