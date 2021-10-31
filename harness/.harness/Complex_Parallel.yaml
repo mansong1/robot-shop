@@ -290,8 +290,8 @@ pipeline:
                                             type: DockerRegistry
                                             spec:
                                                 connectorRef: org.Dockerhub
-                                                imagePath: rabbitmq
-                                                tag: 3.8-management-alpine
+                                                imagePath: library/rabbitmq
+                                                tag: 3.8-management
                         infrastructure:
                             environmentRef: staging
                             infrastructureDefinition:
