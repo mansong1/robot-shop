@@ -963,7 +963,5 @@ pipeline:
     description: A Harness Demo with Barriers and Parallel deployments
     flowControl:
         barriers:
-            - name: Wait for DBs
-              identifier: Wait_for_DBs
             - name: Databases
               identifier: Databases
