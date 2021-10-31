@@ -2,7 +2,6 @@ name: <+service.name>
 replicas: 1
 
 image: <+artifact.image>
-dockercfg: ${artifact.source.dockerconfig}
 
 createNamespace: true
 namespace: <+infra.namespace>
