@@ -7,47 +7,942 @@ pipeline:
         barrier: ""
         control-flow: ""
     stages:
-        - stage:
-              name: MySql
-              identifier: MySql
-              description: ""
-              type: Deployment
-              spec:
-                  serviceConfig:
-                      serviceRef: mysql
-                      serviceDefinition:
-                          type: Kubernetes
-                          spec:
-                              variables: []
-                  infrastructure:
-                      environmentRef: staging
-                      infrastructureDefinition:
-                          type: KubernetesDirect
-                          spec:
-                              connectorRef: org.GKE
-                              namespace: staging
-                              releaseName: release-<+INFRA_KEY>
-                      allowSimultaneousDeployments: false
-                  execution:
-                      steps:
-                          - step:
-                                name: Rollout Deployment
-                                identifier: rolloutDeployment
-                                type: K8sRollingDeploy
-                                timeout: 10m
+        - parallel:
+              - stage:
+                    name: MySql
+                    identifier: MySql
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: mysql
+                            serviceDefinition:
+                                type: Kubernetes
                                 spec:
-                                    skipDryRun: false
-                      rollbackSteps:
-                          - step:
-                                name: Rollback Rollout Deployment
-                                identifier: rollbackRolloutDeployment
-                                type: K8sRollingRollback
-                                timeout: 10m
-                                spec: {}
-              tags: {}
-              failureStrategies:
-                  - onFailure:
-                        errors:
-                            - AllErrors
-                        action:
-                            type: StageRollback
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: mysql_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: mysql_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-mysql-db
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    tags: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: MongoDb
+                    identifier: MongoDB
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: mongodb
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: mongodb_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: mongodb_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-mongodb
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Redis
+                    identifier: Redis
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: redis
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: redis_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: redis_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: library/redis
+                                                tag: 6.2-alpine3.14
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: RabbitMQ
+                    identifier: RabbitMQ
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: rabbitmq
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: rabbitmq_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: rabbitmq_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: library/rabbitmq
+                                                tag: 3.8-management
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+        - parallel:
+              - stage:
+                    name: Catalogue
+                    identifier: Catalogue
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: catalogue
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: catalogue_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: catalogue_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-catalogue
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: User
+                    identifier: User
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: user
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: user_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: user_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-user
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Cart
+                    identifier: Cart
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: cart
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: cart_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: cart_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-cart
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Shipping
+                    identifier: Shipping
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: shipping
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: shipping_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: shipping_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-shipping
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Ratings
+                    identifier: Ratings
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: ratings
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: ratings_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: ratings_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-ratings
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Payment
+                    identifier: Payment
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: payment
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: payment_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: payment_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-payment
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Dispatch
+                    identifier: Dispatch
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: dispatch
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: dispatch_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: dispatch_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-dispatch
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
+              - stage:
+                    name: Web
+                    identifier: Web
+                    description: ""
+                    type: Deployment
+                    spec:
+                        serviceConfig:
+                            serviceRef: web
+                            serviceDefinition:
+                                type: Kubernetes
+                                spec:
+                                    variables: []
+                                    manifests:
+                                        - manifest:
+                                              identifier: web_manifest
+                                              type: K8sManifest
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/templates
+                                                          repoName: robot-shop
+                                                          branch: master
+                                                  skipResourceVersioning: false
+                                        - manifest:
+                                              identifier: web_values
+                                              type: Values
+                                              spec:
+                                                  store:
+                                                      type: Github
+                                                      spec:
+                                                          connectorRef: org.Github
+                                                          gitFetchType: Branch
+                                                          paths:
+                                                              - manifests/<+service.name>/values.yaml
+                                                          repoName: robot-shop
+                                                          branch: master
+                                    artifacts:
+                                        primary:
+                                            type: DockerRegistry
+                                            spec:
+                                                connectorRef: org.Dockerhub
+                                                imagePath: robotshop/rs-web
+                                                tag: latest
+                        infrastructure:
+                            environmentRef: staging
+                            infrastructureDefinition:
+                                type: KubernetesDirect
+                                spec:
+                                    connectorRef: org.GKE
+                                    namespace: staging
+                                    releaseName: release-<+INFRA_KEY>
+                            allowSimultaneousDeployments: false
+                        execution:
+                            steps:
+                                - step:
+                                      name: Rollout Deployment
+                                      identifier: rolloutDeployment
+                                      type: K8sRollingDeploy
+                                      timeout: 10m
+                                      spec:
+                                          skipDryRun: false
+                            rollbackSteps:
+                                - step:
+                                      name: Rollback Rollout Deployment
+                                      identifier: rollbackRolloutDeployment
+                                      type: K8sRollingRollback
+                                      timeout: 10m
+                                      spec: {}
+                    failureStrategies:
+                        - onFailure:
+                              errors:
+                                  - AllErrors
+                              action:
+                                  type: StageRollback
