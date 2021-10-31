@@ -467,10 +467,10 @@ pipeline:
                             steps:
                                 - step:
                                       type: Barrier
-                                      name: DBs Complete
-                                      identifier: Database_Complete
+                                      name: Wait for DBs
+                                      identifier: Wait_for_DBs
                                       spec:
-                                          barrierRef: Wait_for_DBs
+                                          barrierRef: Databases
                                       timeout: 10m
                                 - step:
                                       name: Rollout Deployment
