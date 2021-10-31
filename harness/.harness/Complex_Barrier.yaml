@@ -73,6 +73,13 @@ pipeline:
                                       timeout: 10m
                                       spec:
                                           skipDryRun: false
+                                - step:
+                                      type: Barrier
+                                      name: Wait for DBs
+                                      identifier: Wait_for_DBs
+                                      spec:
+                                          barrierRef: Wait_for_DBs
+                                      timeout: 10m
                             rollbackSteps:
                                 - step:
                                       name: Rollback Rollout Deployment
@@ -321,7 +328,6 @@ pipeline:
                                   - AllErrors
                               action:
                                   type: StageRollback
-        - parallel:
               - stage:
                     name: Catalogue
                     identifier: Catalogue
@@ -946,3 +952,8 @@ pipeline:
                                   - AllErrors
                               action:
                                   type: StageRollback
+    description: A Harness Demo with Barriers and Parallel deployments
+    flowControl:
+        barriers:
+            - name: Wait for DBs
+              identifier: Wait_for_DBs
