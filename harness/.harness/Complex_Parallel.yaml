@@ -1,0 +1,83 @@
+pipeline:
+    name: Complex - Parallel
+    identifier: Complex_Parallel
+    projectIdentifier: RobotShop
+    orgIdentifier: default
+    description: Complex Deployment using Parallel Stages
+    tags:
+        parallel: ""
+        complex: ""
+        microservices: ""
+    stages:
+        - stage:
+              name: Deploy MySql
+              identifier: Deploy_MySql
+              description: ""
+              type: Deployment
+              spec:
+                  serviceConfig:
+                      serviceRef: mysql
+                      serviceDefinition:
+                          type: Kubernetes
+                          spec:
+                              variables: []
+                              manifests:
+                                  - manifest:
+                                        identifier: mysql_manifest
+                                        type: K8sManifest
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/><+service.name>/templates
+                                                    repoName: robot-shop
+                                                    branch: master
+                                            skipResourceVersioning: false
+                                  - manifest:
+                                        identifier: mysql_values
+                                        type: Values
+                                        spec:
+                                            store:
+                                                type: Github
+                                                spec:
+                                                    connectorRef: org.Github
+                                                    gitFetchType: Branch
+                                                    paths:
+                                                        - manifests/<+service.name>/values.yaml
+                                                    repoName: robot-shop
+                                                    branch: master
+                  infrastructure:
+                      environmentRef: staging
+                      infrastructureDefinition:
+                          type: KubernetesDirect
+                          spec:
+                              connectorRef: org.GKE
+                              namespace: staging
+                              releaseName: release-<+INFRA_KEY>
+                      allowSimultaneousDeployments: false
+                  execution:
+                      steps:
+                          - step:
+                                name: Rollout Deployment
+                                identifier: rolloutDeployment
+                                type: K8sRollingDeploy
+                                timeout: 10m
+                                spec:
+                                    skipDryRun: false
+                      rollbackSteps:
+                          - step:
+                                name: Rollback Rollout Deployment
+                                identifier: rollbackRolloutDeployment
+                                type: K8sRollingRollback
+                                timeout: 10m
+                                spec: {}
+              tags: {}
+              failureStrategies:
+                  - onFailure:
+                        errors:
+                            - AllErrors
+                        action:
+                            type: StageRollback
