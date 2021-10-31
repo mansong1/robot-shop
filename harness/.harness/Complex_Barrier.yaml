@@ -465,6 +465,13 @@ pipeline:
                         execution:
                             steps:
                                 - step:
+                                      type: Barrier
+                                      name: Database Complete
+                                      identifier: Database_Complete
+                                      spec:
+                                          barrierRef: Wait_for_DBs
+                                      timeout: 10m
+                                - step:
                                       name: Rollout Deployment
                                       identifier: rolloutDeployment
                                       type: K8sRollingDeploy
