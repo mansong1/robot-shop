@@ -11,7 +11,7 @@ pipeline:
     stages:
         - parallel:
               - stage:
-                    name: Deploy MySql
+                    name: MySql
                     identifier: Deploy_MySql
                     description: ""
                     type: Deployment
