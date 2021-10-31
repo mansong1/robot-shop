@@ -49,6 +49,13 @@ pipeline:
                                                         - manifests/<+service.name>/values.yaml
                                                     repoName: robot-shop
                                                     branch: master
+                              artifacts:
+                                  primary:
+                                      type: DockerRegistry
+                                      spec:
+                                          connectorRef: org.Dockerhub
+                                          imagePath: robotshop/rs-mysql-db
+                                          tag: latest
                   infrastructure:
                       environmentRef: staging
                       infrastructureDefinition:
