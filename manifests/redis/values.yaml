@@ -1,0 +1,15 @@
+name: redis
+replicas: 1
+
+image: ${artifact.metadata.image}
+dockercfg: ${artifact.source.dockerconfig}
+
+createNamespace: true
+namespace: ${infra.kubernetes.namespace}
+
+serviceType: ClusterIP
+
+# A Service can map an incoming port to any targetPort.
+# targetPort is where application is listening on inside the container.
+servicePort: 6379
+serviceTargetPort: 6379

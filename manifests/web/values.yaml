@@ -1,0 +1,15 @@
+name: web
+replicas: 1
+
+image: ${artifact.metadata.image}
+dockercfg: ${artifact.source.dockerconfig}
+
+createNamespace: true
+namespace: ${infra.kubernetes.namespace}
+
+serviceType: LoadBalancer
+
+# A Service can map an incoming port to any targetPort.
+# targetPort is where application is listening on inside the container.
+servicePort: 8080
+serviceTargetPort: 8080
