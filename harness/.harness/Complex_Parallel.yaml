@@ -12,7 +12,7 @@ pipeline:
         - parallel:
               - stage:
                     name: MySql
-                    identifier: Deploy_MySql
+                    identifier: MySql
                     description: ""
                     type: Deployment
                     spec:
@@ -90,8 +90,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy MongoDb
-                    identifier: Deploy_MongoDB
+                    name: MongoDb
+                    identifier: MongoDB
                     description: ""
                     type: Deployment
                     spec:
@@ -168,8 +168,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Redis
-                    identifier: Deploy_Redis
+                    name: Redis
+                    identifier: Redis
                     description: ""
                     type: Deployment
                     spec:
@@ -246,8 +246,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy RabbitMQ
-                    identifier: Deploy_RabbitMQ
+                    name: RabbitMQ
+                    identifier: RabbitMQ
                     description: ""
                     type: Deployment
                     spec:
@@ -325,8 +325,8 @@ pipeline:
                                   type: StageRollback
         - parallel:
               - stage:
-                    name: Deploy Catalogue
-                    identifier: Deploy_Catalogue
+                    name: Catalogue
+                    identifier: Catalogue
                     description: ""
                     type: Deployment
                     spec:
@@ -403,8 +403,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy User
-                    identifier: Deploy_User
+                    name: User
+                    identifier: User
                     description: ""
                     type: Deployment
                     spec:
@@ -481,8 +481,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Cart
-                    identifier: Deploy_Cart
+                    name: Cart
+                    identifier: Cart
                     description: ""
                     type: Deployment
                     spec:
@@ -559,8 +559,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Shipping
-                    identifier: Deploy_Shipping
+                    name: Shipping
+                    identifier: Shipping
                     description: ""
                     type: Deployment
                     spec:
@@ -637,8 +637,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Ratings
-                    identifier: Deploy_Ratings
+                    name: Ratings
+                    identifier: Ratings
                     description: ""
                     type: Deployment
                     spec:
@@ -715,8 +715,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Payment
-                    identifier: Deploy_Payment
+                    name: Payment
+                    identifier: Payment
                     description: ""
                     type: Deployment
                     spec:
@@ -793,8 +793,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Dispatch
-                    identifier: Deploy_Dispatch
+                    name: Dispatch
+                    identifier: Dispatch
                     description: ""
                     type: Deployment
                     spec:
@@ -871,8 +871,8 @@ pipeline:
                               action:
                                   type: StageRollback
               - stage:
-                    name: Deploy Web
-                    identifier: Deploy_Web
+                    name: Web
+                    identifier: Web
                     description: ""
                     type: Deployment
                     spec:
