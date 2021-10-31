@@ -73,6 +73,13 @@ pipeline:
                                       timeout: 10m
                                       spec:
                                           skipDryRun: false
+                                - step:
+                                      type: Barrier
+                                      name: Databases Complete
+                                      identifier: Databases_Complete
+                                      spec:
+                                          barrierRef: Databases
+                                      timeout: 10m
                             rollbackSteps:
                                 - step:
                                       name: Rollback Rollout Deployment
