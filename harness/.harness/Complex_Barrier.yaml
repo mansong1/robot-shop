@@ -73,13 +73,6 @@ pipeline:
                                       timeout: 10m
                                       spec:
                                           skipDryRun: false
-                                - step:
-                                      type: Barrier
-                                      name: Wait for DBs
-                                      identifier: Wait_for_DBs
-                                      spec:
-                                          barrierRef: Wait_for_DBs
-                                      timeout: 10m
                             rollbackSteps:
                                 - step:
                                       name: Rollback Rollout Deployment
@@ -87,6 +80,7 @@ pipeline:
                                       type: K8sRollingRollback
                                       timeout: 10m
                                       spec: {}
+                        serviceDependencies: []
                     tags: {}
                     failureStrategies:
                         - onFailure:
@@ -964,3 +958,5 @@ pipeline:
         barriers:
             - name: Wait for DBs
               identifier: Wait_for_DBs
+            - name: Databases
+              identifier: Databases
