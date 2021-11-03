@@ -4,8 +4,9 @@ pipeline:
     projectIdentifier: RobotShop
     orgIdentifier: default
     tags:
-        barrier: ""
-        control-flow: ""
+        Barrier: ""
+        Complex: ""
+        FlowControl: ""
     stages:
         - parallel:
               - stage:
